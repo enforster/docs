@@ -1,7 +1,271 @@
 {
-  "title": "Documentation",
-  "sort": ["index.mdx", "guides/what-is-ai-sast.mdx", "features/ai-sast.mdx", "features/sca.mdx"],
+  "title": "Enforster AI - AI-Powered SAST Documentation | Zero False Positives",
+  "description": "Complete documentation for Enforster AI - the world's first AI-powered SAST platform with LLM-driven code security, instant vulnerability fixes, and zero false positives.",
+  "keywords": "SAST documentation, AI SAST guide, LLM SAST tutorial, SCA documentation, AI code security, automated vulnerability fixes, DevSecOps, shift left security",
+  "sort": [
+    "index.mdx",
+    "getting-started",
+    "features", 
+    "integrations",
+    "api-reference",
+    "tutorials",
+    "case-studies",
+    "support"
+  ],
   "pages": [
-    { "path": "index.mdx", "title": "Home" }
-  ]
+    {
+      "path": "index.mdx",
+      "title": "🚀 Enforster AI - AI-Powered SAST Platform",
+      "description": "World's first AI-native SAST tool with zero false positives and instant vulnerability fixes"
+    },
+    {
+      "path": "getting-started",
+      "title": "🏁 Getting Started",
+      "description": "Quick start guide to set up AI-powered security scanning in 120 seconds",
+      "pages": [
+        {
+          "path": "getting-started/quick-start.mdx",
+          "title": "⚡ Quick Start (120 Seconds)",
+          "description": "Get your first AI SAST scan running in under 2 minutes"
+        },
+        {
+          "path": "getting-started/installation.mdx", 
+          "title": "📦 Installation & Setup",
+          "description": "Complete installation guide for all environments"
+        },
+        {
+          "path": "getting-started/first-scan.mdx",
+          "title": "🔍 Your First AI Security Scan",
+          "description": "Step-by-step guide to running your first vulnerability scan"
+        },
+        {
+          "path": "getting-started/what-is-ai-sast.mdx",
+          "title": "🤖 What is AI-Powered SAST?",
+          "description": "Understanding LLM-driven static application security testing"
+        }
+      ]
+    },
+    {
+      "path": "features",
+      "title": "✨ Features",
+      "description": "Comprehensive guide to all Enforster AI security features",
+      "pages": [
+        {
+          "path": "features/ai-sast.mdx",
+          "title": "🛡️ AI-Powered SAST Engine",
+          "description": "LLM-driven static analysis with zero false positives"
+        },
+        {
+          "path": "features/auto-fix.mdx",
+          "title": "⚡ One-Click Auto-Fix",
+          "description": "AI-generated security patches and instant vulnerability fixes"
+        },
+        {
+          "path": "features/sca.mdx",
+          "title": "📦 Software Composition Analysis (SCA)",
+          "description": "Open source vulnerability scanning and dependency analysis"
+        },
+        {
+          "path": "features/secrets-detection.mdx",
+          "title": "🔐 Secrets Detection & Management",
+          "description": "Comprehensive scanning for API keys, tokens, and credentials"
+        },
+        {
+          "path": "features/ai-sbom.mdx",
+          "title": "📋 AI-Generated SBOM",
+          "description": "Automated Software Bill of Materials generation"
+        },
+        {
+          "path": "features/code-review.mdx",
+          "title": "👥 AI Code Review",
+          "description": "LLM-powered security code review and recommendations"
+        },
+        {
+          "path": "features/real-time-scanning.mdx",
+          "title": "⚡ Real-Time Scanning",
+          "description": "Lightning-fast 120-second comprehensive security scans"
+        },
+        {
+          "path": "features/dashboard.mdx",
+          "title": "📊 Security Dashboard",
+          "description": "Advanced analytics, metrics, and vulnerability tracking"
+        }
+      ]
+    },
+    {
+      "path": "integrations",
+      "title": "🔗 Integrations",
+      "description": "Connect Enforster AI with your development workflow",
+      "pages": [
+        {
+          "path": "integrations/github.mdx",
+          "title": "🐙 GitHub Integration",
+          "description": "Seamless GitHub repository security scanning"
+        },
+        {
+          "path": "integrations/gitlab.mdx",
+          "title": "🦊 GitLab Integration", 
+          "description": "GitLab CI/CD pipeline security integration"
+        },
+        {
+          "path": "integrations/bitbucket.mdx",
+          "title": "🪣 Bitbucket Integration",
+          "description": "Bitbucket repository and pipeline integration"
+        },
+        {
+          "path": "integrations/slack.mdx",
+          "title": "💬 Slack Integration",
+          "description": "Real-time security alerts in Slack channels"
+        },
+        {
+          "path": "integrations/jira.mdx",
+          "title": "📋 Jira Integration",
+          "description": "Automatic security ticket creation and tracking"
+        },
+        {
+          "path": "integrations/ci-cd.mdx",
+          "title": "⚙️ CI/CD Pipelines",
+          "description": "Jenkins, CircleCI, Azure DevOps integration guides"
+        }
+      ]
+    },
+    {
+      "path": "api-reference",
+      "title": "📖 API Reference",
+      "description": "Complete REST API documentation for Enforster AI",
+      "pages": [
+        {
+          "path": "api-reference/authentication.mdx",
+          "title": "🔑 Authentication",
+          "description": "API authentication and security tokens"
+        },
+        {
+          "path": "api-reference/scans.mdx",
+          "title": "🔍 Scans API",
+          "description": "Trigger and manage security scans programmatically"
+        },
+        {
+          "path": "api-reference/vulnerabilities.mdx",
+          "title": "🚨 Vulnerabilities API",
+          "description": "Retrieve and manage vulnerability data"
+        },
+        {
+          "path": "api-reference/projects.mdx",
+          "title": "📁 Projects API",
+          "description": "Project management and configuration"
+        },
+        {
+          "path": "api-reference/webhooks.mdx",
+          "title": "🔔 Webhooks",
+          "description": "Real-time notifications and event handling"
+        }
+      ]
+    },
+    {
+      "path": "tutorials",
+      "title": "🎓 Tutorials",
+      "description": "Step-by-step guides and best practices",
+      "pages": [
+        {
+          "path": "tutorials/zero-to-secure.mdx",
+          "title": "🚀 Zero to Secure in 5 Minutes",
+          "description": "Complete beginner's guide to AI-powered security"
+        },
+        {
+          "path": "tutorials/fixing-vulnerabilities.mdx",
+          "title": "🛠️ Fixing Vulnerabilities with AI",
+          "description": "Master the auto-fix feature and manual remediation"
+        },
+        {
+          "path": "tutorials/custom-rules.mdx",
+          "title": "⚙️ Custom Security Rules",
+          "description": "Create custom AI-powered security rules"
+        },
+        {
+          "path": "tutorials/team-setup.mdx",
+          "title": "👥 Team & Enterprise Setup",
+          "description": "Configure Enforster AI for teams and organizations"
+        },
+        {
+          "path": "tutorials/best-practices.mdx",
+          "title": "🏆 Security Best Practices",
+          "description": "Expert tips for maximum security coverage"
+        }
+      ]
+    },
+    {
+      "path": "case-studies",
+      "title": "📊 Case Studies",
+      "description": "Real-world success stories and results",
+      "pages": [
+        {
+          "path": "case-studies/startup-success.mdx",
+          "title": "🚀 Startup: 0 to SOC 2 in 30 Days",
+          "description": "How a fintech startup achieved compliance with AI SAST"
+        },
+        {
+          "path": "case-studies/enterprise-migration.mdx",
+          "title": "🏢 Enterprise: 90% False Positive Reduction",
+          "description": "Fortune 500 company's migration from traditional SAST"
+        },
+        {
+          "path": "case-studies/developer-productivity.mdx",
+          "title": "⚡ 5x Developer Productivity Increase",
+          "description": "How auto-fix eliminated security debt overnight"
+        }
+      ]
+    },
+    {
+      "path": "support",
+      "title": "🛟 Support",
+      "description": "Get help and support from our team",
+      "pages": [
+        {
+          "path": "support/faq.mdx",
+          "title": "❓ Frequently Asked Questions",
+          "description": "Common questions about AI SAST and Enforster AI"
+        },
+        {
+          "path": "support/troubleshooting.mdx",
+          "title": "🔧 Troubleshooting Guide",
+          "description": "Solve common issues and configuration problems"
+        },
+        {
+          "path": "support/contact.mdx",
+          "title": "📞 Contact Support",
+          "description": "Get help from our security experts"
+        },
+        {
+          "path": "support/community.mdx",
+          "title": "👥 Community & Resources",
+          "description": "Join the Enforster AI developer community"
+        }
+      ]
+    }
+  ],
+  "navigation": {
+    "logo": {
+      "light": "/logo/light.svg",
+      "dark": "/logo/dark.svg",
+      "href": "https://enforster.ai"
+    },
+    "feedback": {
+      "thumbsRating": true,
+      "suggestEdit": true,
+      "raiseIssue": true
+    }
+  },
+  "footer": {
+    "socials": {
+      "twitter": "https://twitter.com/enforster.ai",
+      "github": "https://github.com/enforster",
+      "linkedin": "https://linkedin.com/company/enforster"
+    }
+  },
+  "seo": {
+    "indexHiddenPages": false
+  },
+  "analytics": {
+    "gtag": "G-XXXXXXXXXX"
+  }
 }
