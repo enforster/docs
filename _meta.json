@@ -1,0 +1,7 @@
+{
+  "title": "Documentation",
+  "sort": ["index.mdx", "guides/what-is-ai-sast.mdx", "features/ai-sast.mdx", "features/sca.mdx"],
+  "pages": [
+    { "path": "index.mdx", "title": "Home" }
+  ]
+}
