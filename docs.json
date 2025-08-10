@@ -70,9 +70,21 @@
           "pages": ["index"]
         }
       ]
-    }
-  ]
-},
+    },
+{
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "📖 Getting Started",
+            "pages": [
+              "api-reference/index",
+              "api-reference/authentication"
+            ]
+          }
+        ]
+      }
+    ]
+  },
   "api": {
     "baseUrl": "https://api.enforster.ai/v1",
     "auth": {
