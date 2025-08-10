@@ -5,22 +5,9 @@ keywords: ["Enforster AI","AI SAST","SCA","Supply Chain Attacks","AI Secrets Sca
 canonical: "https://enforster.ai/docs"
 ---
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Enforster AI",
-  "url": "https://enforster.ai",
-  "description": "AI-powered SAST, SCA, Secrets Scanning, SBOM generation and AI Autofix to prevent supply chain attacks and fix vulnerabilities faster.",
-  "applicationCategory": "SecurityApplication",
-  "keywords": "AI SAST, SCA, Supply Chain Attacks, AI Secrets Scanning, AI Autofix, SBOM"
-}
-</script>
-
-{/* PAGE LAYOUT: Sidebar + Main */}
 <div className="flex gap-8 max-w-7xl mx-auto py-12 px-6">
 
-  {/* SIDEBAR / NAV (desktop only) */}
+  <!-- SIDEBAR / NAV (desktop only) -->
   <aside className="hidden lg:block w-64 shrink-0 sticky top-20">
     <nav className="space-y-3 text-sm">
       <div className="font-medium mb-4">On this page</div>
@@ -43,17 +30,17 @@ canonical: "https://enforster.ai/docs"
     </nav>
   </aside>
 
-  {/* MAIN CONTENT */}
+  <!-- MAIN CONTENT -->
   <main className="prose max-w-3xl">
 
-    {/* HERO */}
+    <!-- HERO -->
     <section id="hero">
       <h1 className="!text-4xl !font-extrabold">
         Enforster AI — AI SAST, SCA & Supply-Chain Security that Fixes Code As You Write
       </h1>
 
       <p className="lead">
-        Enforster AI delivers AI-powered Static Application Security Testing (AI SAST), Software Composition Analysis (SCA), SBOM/GBOM generation, AI Secrets Scanning and one-click **AI Autofix** — all designed to stop supply chain attacks and reduce time-to-remediation.
+        Enforster AI delivers AI-powered Static Application Security Testing (AI SAST), Software Composition Analysis (SCA), SBOM generation, AI Secrets Scanning and one-click <strong>AI Autofix</strong> — all designed to stop supply chain attacks and reduce time-to-remediation.
       </p>
 
       <div className="flex gap-3 mt-6">
@@ -68,15 +55,15 @@ canonical: "https://enforster.ai/docs"
 
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <div className="p-3 border rounded">
-          <div className="font-semibold">Ship Secure</div>
+          <div className="font-semibold">🚀 Ship Secure</div>
           <div className="text-xs opacity-80">Find & fix vulnerabilities pre-merge</div>
         </div>
         <div className="p-3 border rounded">
-          <div className="font-semibold">Stop Supply Chain Attacks</div>
+          <div className="font-semibold">🛡️ Stop Supply Chain Attacks</div>
           <div className="text-xs opacity-80">Detect typosquatting & malicious deps</div>
         </div>
         <div className="p-3 border rounded">
-          <div className="font-semibold">Revoke Secrets Fast</div>
+          <div className="font-semibold">🔑 Revoke Secrets Fast</div>
           <div className="text-xs opacity-80">Secrets scanning across commits & configs</div>
         </div>
       </div>
@@ -84,27 +71,27 @@ canonical: "https://enforster.ai/docs"
 
     <hr />
 
-    {/* FEATURES + CTA */}
+    <!-- FEATURES + CTA -->
     <section id="features">
       <h2>Key Features — Built for modern DevSecOps (AI SAST & SCA)</h2>
       <p className="opacity-80">
-        Enforster AI combines **AI SAST**, **AI SCA**, **AI Secrets Scanning**, and **AI Autofix** into a single developer-first platform so teams can detect, triage, and remediate threats — including supply chain attacks — earlier and faster.
+        Enforster AI combines <strong>AI SAST</strong>, <strong>AI SCA</strong>, <strong>AI Secrets Scanning</strong>, and <strong>AI Autofix</strong> into a single developer-first platform so teams can detect, triage, and remediate threats — including supply chain attacks — earlier and faster.
       </p>
 
       <CardGroup cols={2} className="mt-6">
-        <Card title="AI SAST — Contextual Static Analysis" icon="brain" href="/features/ai-sast">
+        <Card title="AI SAST — Contextual Static Analysis" href="/features/ai-sast">
           Deep semantic scanning (data flow, taint analysis) to find SQLi, XSS, SSRF, auth issues and more — with context-aware confidence scores.
         </Card>
 
-        <Card title="AI SCA & SBOM" icon="package" href="/features/sca">
-          Continuous dependency monitoring, SBOM/GBOM generation, license checks and malicious package detection to prevent dependency-based supply chain attacks.
+        <Card title="AI SCA & SBOM" href="/features/sca">
+          Continuous dependency monitoring, SBOM generation, license checks and malicious package detection to prevent dependency-based supply chain attacks.
         </Card>
 
-        <Card title="AI Secrets Scanning" icon="key" href="/features/secrets">
+        <Card title="AI Secrets Scanning" href="/features/secrets">
           Detect hardcoded API keys, credentials, and leaked tokens across code, commits and configs — minimal false positives, instant revoke recommendations.
         </Card>
 
-        <Card title="AI Autofix — Ready-to-Commit Patches" icon="magic-wand" href="/features/auto-fix">
+        <Card title="AI Autofix — Ready-to-Commit Patches" href="/features/auto-fix">
           AI-generated patch suggestions for common issues — preview, approve and merge fixes directly in your workflow.
         </Card>
       </CardGroup>
@@ -121,7 +108,7 @@ canonical: "https://enforster.ai/docs"
 
     <hr />
 
-    {/* HOW IT WORKS + TABLE */}
+    <!-- HOW IT WORKS + TABLE -->
     <section id="how-it-works">
       <h2>How Enforster AI Works</h2>
       <p className="opacity-80">
@@ -129,7 +116,7 @@ canonical: "https://enforster.ai/docs"
       </p>
 
       <div className="mt-6 rounded-xl border p-4">
-        <h3>Security Matrix</h3>
+        <h3 id="security-matrix">Security Matrix</h3>
         <div className="overflow-x-auto mt-3">
           <table className="w-full text-left">
             <thead>
@@ -172,12 +159,12 @@ canonical: "https://enforster.ai/docs"
 
     <hr />
 
-    {/* DETAILED ACCORDIONS */}
+    <!-- DETAILED ACCORDIONS -->
     <section id="details" className="mt-8">
       <h2>Deep Dive</h2>
 
       <AccordionGroup>
-        <Accordion title="AI SAST — What makes it different?" icon="search">
+        <Accordion title="AI SAST — What makes it different?">
           <p>
             Unlike traditional pattern-based SAST, Enforster AI analyzes execution paths, data flow and code intent to reduce false positives while surfacing exploit chains and risky patterns.
           </p>
@@ -188,15 +175,15 @@ canonical: "https://enforster.ai/docs"
           </ul>
         </Accordion>
 
-        <Accordion title="SCA & SBOM — Protect your supply chain" icon="shield">
+        <Accordion title="SCA & SBOM — Protect your supply chain">
           <p>
-            Automatic SBOM/GBOM generation and continuous monitoring help you detect malicious package injections, typosquatting, or dependency confusion — the most common supply chain attack vectors today.
+            Automatic SBOM generation and continuous monitoring help you detect malicious package injections, typosquatting, or dependency confusion — common supply chain attack vectors.
           </p>
         </Accordion>
 
-        <Accordion title="Secrets Scanning & Response" icon="key">
+        <Accordion title="Secrets Scanning & Response">
           <p>
-            Secrets scanning works across code, history, PRs and containers. When a secret is found, Enforster AI surfaces revoke steps, rotates credentials (where integrated), and creates an actionable ticket for remediation.
+            Secrets scanning works across code, history, PRs and containers. When a secret is found, Enforster AI surfaces revoke steps and creates an actionable ticket for remediation.
           </p>
         </Accordion>
       </AccordionGroup>
@@ -204,7 +191,7 @@ canonical: "https://enforster.ai/docs"
 
     <hr />
 
-    {/* QUICK START STEPS */}
+    <!-- QUICK START STEPS -->
     <section id="quick-start">
       <h2>Quick Start — From zero to secure in minutes</h2>
 
@@ -223,20 +210,20 @@ canonical: "https://enforster.ai/docs"
 
     <hr />
 
-    {/* FAQ / CONVERSION */}
+    <!-- FAQ / CONVERSION -->
     <section id="faq">
       <h2>FAQ — Short answers to common questions</h2>
 
       <AccordionGroup>
-        <Accordion title="Does Enforster AI integrate with my CI/CD?" icon="cloud">
+        <Accordion title="Does Enforster AI integrate with my CI/CD?">
           <p>Yes — GitHub Actions, GitLab CI, Bitbucket, Jenkins and most CI systems are supported. Use our CI step or app to get real-time scanning.</p>
         </Accordion>
 
-        <Accordion title="How accurate is the AI?" icon="chart-bar">
+        <Accordion title="How accurate is the AI?">
           <p>Our models combine multiple signals to prioritize high-confidence findings and reduce noise. Configure sensitivity per repo or team to fit your workflow.</p>
         </Accordion>
 
-        <Accordion title="Can I review fixes before merging?" icon="git-branch">
+        <Accordion title="Can I review fixes before merging?">
           <p>Always. AI Autofix produces PRs or patch diffs you can review, test and merge. Version history and rollbacks are built in.</p>
         </Accordion>
       </AccordionGroup>
@@ -244,7 +231,7 @@ canonical: "https://enforster.ai/docs"
 
     <hr />
 
-    {/* SOCIAL PROOF / NOTES */}
+    <!-- SOCIAL PROOF / NOTES -->
     <section id="testimonials" className="mt-8">
       <h2>What developers are saying</h2>
       <div className="grid gap-4 sm:grid-cols-2 mt-4">
@@ -260,7 +247,7 @@ canonical: "https://enforster.ai/docs"
 
     <hr />
 
-    {/* CONTACT / CTA */}
+    <!-- CONTACT / CTA -->
     <section id="contact" className="mt-8">
       <h2>Ready to defend your code and stop supply chain attacks?</h2>
       <p className="opacity-80">Start a free trial, schedule a demo, or contact sales for enterprise plans.</p>
