@@ -1,11 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "Enforster AI Documentation",
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg",
-    "href": "https://enforster.ai"
-  },
+  "name": "Enforster AI Docs",
   "favicon": "/favicon.png",
   "colors": {
     "primary": "#667eea",
