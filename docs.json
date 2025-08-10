@@ -1,24 +1,127 @@
 {
-    "$schema": "https://mintlify.com/docs.json",
-    "theme": "mint",
-    "name": "Enforster AI Docs",
-    "colors": {
-        "primary": "#ff0000"
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Enforster AI Documentation",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "https://enforster.ai"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#667eea",
+    "light": "#8B5CF6",
+    "dark": "#4C1D95"
+  },
+  "theme": "mint",
+  "modeToggle": {
+    "default": "light",
+    "isHidden": false
+  },
+  "topbarLinks": [
+    {
+      "name": "🚀 Start Free Trial",
+      "url": "https://app.enforster.ai/signup"
     },
-    "navigation": {
-      "pages": [
-        index,
-        Endpoints
-    ]
+    {
+      "name": "💬 Support",
+      "url": "https://enforster.ai/support"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "https://app.enforster.ai/signup",
+    "style": "roundedRectangle"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "🌐 Website",
+      "icon": "globe",
+      "url": "https://enforster.ai"
     },
-    "tab": "API Reference",
-    "groups": [
+    {
+      "name": "💬 Community",
+      "icon": "discord",
+      "url": "https://discord.gg/enforster"
+    },
+    {
+      "name": "📧 Support",
+      "icon": "envelope", 
+      "url": "mailto:support@enforster.ai"
+    },
+    {
+      "name": "🐙 GitHub",
+      "icon": "github",
+      "url": "https://github.com/enforster"
+    }
+  ],
+"navigation": {
+  "tabs": [
+    {
+      "tab": "Documentation", 
+      "groups": [
         {
-            "group": "Endpoints",
-            "openapi": {
-                "source": "/api-reference/openapi.json",
-                "directory": "api-reference"
-            }
+          "group": "🏠 Home",
+          "pages": ["index"]
         }
-    ]
+      ]
+    }
+  ]
+},
+  "api": {
+    "baseUrl": "https://api.enforster.ai/v1",
+    "auth": {
+      "method": "bearer"
+    },
+    "playground": {
+      "mode": "show"
+    }
+  },
+  "openapi": [
+    {
+      "url": "api-reference/openapi.json"
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/enforsterai",
+    "github": "https://github.com/enforster",
+    "linkedin": "https://linkedin.com/company/enforster",
+    "discord": "https://discord.gg/enforster"
+  },
+  "backgroundImage": "/images/background.png",
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true,
+    "raiseIssue": true
+  },
+  "search": {
+    "prompt": "Search Enforster AI docs for AI SAST, vulnerability scanning, auto-fix..."
+  },
+  "analytics": {
+    "gtag": "G-XXXXXXXXXX"
+  },
+  "seo": {
+    "indexHiddenPages": false,
+    "noindex": false
+  },
+  "redirects": [
+    {
+      "source": "/docs",
+      "destination": "/"
+    },
+    {
+      "source": "/api",
+      "destination": "/api-reference"
+    }
+  ],
+  "metadata": {
+    "og:image": "https://enforster.ai/images/og-image.png",
+    "og:description": "AI-powered SAST platform with lowest possible false positives, instant vulnerability fixes, and fast AI scans. Revolutionary LLM-driven code security.",
+    "twitter:site": "@enforster.ai"
+  }
 }
