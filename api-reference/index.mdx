@@ -1,0 +1,132 @@
+---
+title: "Enforster AI API Reference | Complete REST API Documentation"
+description: "Complete REST API documentation for Enforster AI - integrate AI-powered SAST, vulnerability scanning, auto-fix, and security automation into your DevOps pipeline."
+---
+
+# 🚀 **Enforster AI API Reference**
+
+Integrate the Enforster AI-powered SAST platform directly into your development workflow. Our REST API provides programmatic access to the **lowest false positive** vulnerability scanning, **instant AI-powered fixes**, and comprehensive security automation.
+
+<Note>
+  **🔑 API Base URL:** `https://api.enforster.ai/`
+</Note>
+
+## 🎯 **What You Can Build**
+
+<CardGroup cols={2}>
+  <Card title="🔄 CI/CD Integration" icon="gear" href="/api-reference/scans">
+    Trigger **120-second AI scans** in your deployment pipeline with zero false positives
+  </Card>
+  <Card title="🛠️ Custom Dashboards" icon="chart-line" href="/api-reference/vulnerabilities">
+    Build security dashboards with **real-time vulnerability data** and AI insights
+  </Card>
+  <Card title="🤖 Automated Remediation" icon="wand-magic-sparkles" href="/api-reference/auto-fix">
+    Automatically apply **AI-generated security fixes** to your repositories
+  </Card>
+  <Card title="📊 Security Analytics" icon="chart-bar" href="/api-reference/analytics">
+    Extract **security metrics** and **AI-powered insights** for reporting
+  </Card>
+</CardGroup>
+
+## 🏃‍♂️ **Quick Start**
+
+<Steps>
+  <Step title="🔑 Get API Key">
+    Generate your API key from the [Enforster AI Dashboard](https://app.enforster.ai/settings/api)
+  </Step>
+  <Step title="🔍 Run Your First Scan">
+    ```bash
+    curl -X GET https://api.enforster.ai/scans \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -H "Content-Type: application/json"
+    ```
+  </Step>
+  <Step title="📊 Get Results">
+    Retrieve **AI-analyzed vulnerabilities** in JSON format
+  </Step>
+</Steps>
+
+## 📚 **API Sections**
+
+<AccordionGroup>
+  <Accordion title="Authentication" icon="key">
+    **Secure API access with Bearer tokens**
+
+    - OAuth 2.0 and API key authentication
+    - Token refresh and management
+    - Rate limiting and security policies
+
+    [View Authentication Docs →](/api-reference/authentication)
+  </Accordion>
+  <Accordion title="Scans API" icon="magnifying-glass">
+    **AI-powered security scanning**
+
+    - Create and manage security scans
+    - 120-second comprehensive analysis
+    - Real-time scan status and results
+
+    [View Scans API →](/api-reference/scans)
+  </Accordion>
+  <Accordion title="Vulnerabilities API" icon="shield-exclamation">
+    **Zero false positive vulnerability data**
+
+    - List and filter vulnerabilities
+    - AI severity classification
+    - Detailed remediation guidance
+
+    [View Vulnerabilities API →](/api-reference/vulnerabilities)
+  </Accordion>
+  <Accordion title="Auto-Fix API" icon="wand-magic-sparkles">
+    **AI-generated security patches**
+
+    - One-click vulnerability fixes
+    - AI-powered code generation
+    - Automated pull request creation
+
+    [View Auto-Fix API →](/api-reference/auto-fix)
+  </Accordion>
+  <Accordion title="Projects API" icon="folder">
+    **Project and repository management**
+
+    - Configure scan settings
+    - Manage team access
+    - Set security policies
+
+    [View Projects API →](/api-reference/projects)
+  </Accordion>
+</AccordionGroup>
+
+## 🛡️ **Security & Best Practices**
+
+<Warning>
+  **Keep your API keys secure\!** Never expose them in client-side code or public repositories.
+</Warning>
+
+<Tabs>
+  <Tab title="🔐 Authentication">
+    - Use **Bearer token authentication** for all requests
+    - Rotate API keys regularly (90-day recommended)
+    - Implement proper error handling for 401/403 responses
+    - Use HTTPS only - never send keys over HTTP
+  </Tab>
+  <Tab title="🔄 Error Handling">
+    - All errors return structured JSON responses
+    - Use HTTP status codes for error classification
+    - Implement exponential backoff for retries
+    - Log API responses for debugging
+  </Tab>
+</Tabs>
+
+## 🚀 **Ready to Get Started?**
+
+<CardGroup cols={3}>
+  <Card title="🔑 Authentication" icon="key" href="/api-reference/authentication">
+    Set up secure API access from outer world
+  </Card>
+  <Card title="🔍 Your First Scan" icon="rocket" href="/api-reference/scans">
+    Trigger AI-powered security scan
+  </Card>
+  <Card title="📖 OpenAPI Spec" icon="code" href="/api-reference/openapi">
+    Complete OpenAPI 3.0 specification
+  </Card>
+</CardGroup>
