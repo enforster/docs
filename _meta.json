@@ -132,34 +132,7 @@
     {
       "path": "api-reference",
       "title": "📖 API Reference",
-      "description": "Complete REST API documentation for Enforster AI",
-      "pages": [
-        {
-          "path": "api-reference/authentication.mdx",
-          "title": "🔑 Authentication",
-          "description": "API authentication and security tokens"
-        },
-        {
-          "path": "api-reference/scans.mdx",
-          "title": "🔍 Scans API",
-          "description": "Trigger and manage security scans programmatically"
-        },
-        {
-          "path": "api-reference/vulnerabilities.mdx",
-          "title": "🚨 Vulnerabilities API",
-          "description": "Retrieve and manage vulnerability data"
-        },
-        {
-          "path": "api-reference/projects.mdx",
-          "title": "📁 Projects API",
-          "description": "Project management and configuration"
-        },
-        {
-          "path": "api-reference/webhooks.mdx",
-          "title": "🔔 Webhooks",
-          "description": "Real-time notifications and event handling"
-        }
-      ]
+      "description": "Complete REST API documentation for Enforster AI"
     },
     {
       "path": "tutorials",
