@@ -1,0 +1,3748 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Enforster AI API",
+    "description": "Enforster AI API for code analysis and security scanning.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/upload": {
+      "post": {
+        "summary": "Upload Code Repo",
+        "description": "Upload and scan a repository file.\n\n**Required Scope:** `write:repo`\n**Security:** Organization-level access control\n**Auth:** Supports both Clerk tokens and API keys",
+        "operationId": "upload_code_repo_api_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_code_repo_api_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:repo"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/repositories": {
+      "get": {
+        "summary": "List Repositories",
+        "description": "Get all repositories for the current user's organization.\n\n**Required Scope:** `read:repo`\n**Security:** Organization-level access control with IDOR prevention\n**Auth:** Supports both Clerk tokens and API keys",
+        "operationId": "list_repositories_api_repositories_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoriesResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "read:repo"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/repositories/{repo_id}": {
+      "delete": {
+        "summary": "Deactivate Repository",
+        "description": "Deactivate a repository by clearing sensitive fields and renaming it to indicate deactivation.\nThis is used instead of deletion due to foreign key constraints.\n\nThe deactivation process:\n1. Clears sensitive fields (internal_repo_path, public_link, github_repo_id, gitlab_repo_id, github_account_name)\n2. Renames the repository to \"{original_name}_deactivated\"\n3. Removes the repository from GitHub/GitLab index tables if present\n4. Preserves all related data (scans, issues, summaries) for audit purposes\n\nArgs:\n    repo_id: Repository ID to deactivate\n    user: Authenticated user from Clerk\n    \nReturns:\n    204: Repository successfully deactivated\n    403: Missing org or user ID\n    404: Repository not found or not authorized\n    500: Internal server error",
+        "operationId": "deactivate_repository_api_repositories__repo_id__delete",
+        "parameters": [
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "delete:repo"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/repositories/{repo_id}/summary": {
+      "get": {
+        "summary": "Get Repository Summary",
+        "description": "Get repository summary data for a specific repository.\n\n**Required Scope:** `read:repo`\n**Security:** Organization-level access control with resource validation\n**Auth:** Supports both Clerk tokens and API keys\n\nArgs:\n    repo_id: Repository ID\n    auth: Authentication context\n    \nReturns:\n    Repository summary data including architecture patterns, auth logic, and RAG context\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or no access to repo)\n    404: Repository or summary not found\n    500: Internal server error",
+        "operationId": "get_repository_summary_api_repositories__repo_id__summary_get",
+        "parameters": [
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositorySummaryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "read:repo"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/repositories/summaries": {
+      "get": {
+        "summary": "List Repository Summaries",
+        "description": "Get all repository summaries for the current user's organization.\n\nArgs:\n  Get all repository summaries for the current user's organization.\n\n**Required Scope:** `read:repo`\n**Security:** Organization-level filtering\n**Auth:** Supports both Clerk tokens and API keys\n\nReturns:\n    List of repository summaries with metadata\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope)\n    500: Internal server error",
+        "operationId": "list_repository_summaries_api_repositories_summaries_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositorySummaryListResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "read:repo"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/scans/{repo_id}": {
+      "post": {
+        "summary": "Create Scan",
+        "description": "Create a new scan for a repository and queue it for execution.\n\n**Required Scope:** `write:scan`\n**Security:** Repository ownership validation\n**Auth:** Supports both Clerk tokens and API keys\n\nArgs:\n    repo_id: Repository ID to scan\n    request: Scan creation request with scan_type and active_models\n    background_tasks: FastAPI background tasks\n    auth: Authentication context\n    \nReturns:\n    Created scan details with task ID\n    \nRaises:\n    400: Bad request (validation errors, including if scan is already running)\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or repository not owned by user's org)\n    404: Not found (repository not found)\n    500: Internal server error",
+        "operationId": "create_scan_api_scans__repo_id__post",
+        "parameters": [
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Create Scan Api Scans  Repo Id  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:scan"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/scans/{scan_id}/stop": {
+      "post": {
+        "summary": "Stop Scan",
+        "description": "Stop a running scan by cancelling the Celery task.\n\n**Required Scope:** `write:scan`\n**Security:** Scan ownership validation through repository\n**Auth:** Supports both Clerk tokens and API keys\n\nArgs:\n    scan_id: Scan ID to stop\n    auth: Authentication context\n    \nReturns:\n    Success message with scan status\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or scan not owned by user's org)\n    404: Not found (scan not found)\n    400: Bad request (scan not running)",
+        "operationId": "stop_scan_api_scans__scan_id__stop_post",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Stop Scan Api Scans  Scan Id  Stop Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:scan"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/scans/{scan_id}/task-status": {
+      "get": {
+        "summary": "Get Scan Task Status",
+        "description": "Get the Celery task status for a scan.\n\nArgs:\n    scan_id: Scan ID to check task status for\n    user: Authenticated user from Clerk\n    \nReturns:\n    Task status information\n    \nRaises:\n    401: Unauthorized (invalid token)\n    403: Forbidden (scan not owned by user's org)\n    404: Not found (scan not found)",
+        "operationId": "get_scan_task_status_api_scans__scan_id__task_status_get",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Scan Task Status Api Scans  Scan Id  Task Status Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:scan"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/scans/{scan_id}/status": {
+      "get": {
+        "summary": "Get Scan Status",
+        "description": "Get the current status of a scan.\n\nArgs:\n    scan_id: Scan ID to check\n    user: Authenticated user from Clerk\n    \nReturns:\n    Scan status information\n    \nRaises:\n    401: Unauthorized (invalid token)\n    403: Forbidden (scan not owned by user's org)\n    404: Not found (scan not found)",
+        "operationId": "get_scan_status_api_scans__scan_id__status_get",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Scan Status Api Scans  Scan Id  Status Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:scan"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/scans/{scan_id}/results": {
+      "get": {
+        "summary": "Get Scan Results",
+        "description": "Get the results of a completed scan.\n\nArgs:\n    scan_id: Scan ID to get results for\n    user: Authenticated user from Clerk\n    \nReturns:\n    Scan results with issues and summary\n    \nRaises:\n    401: Unauthorized (invalid token)\n    403: Forbidden (scan not owned by user's org)\n    404: Not found (scan not found)\n    400: Bad request (scan not completed)",
+        "operationId": "get_scan_results_api_scans__scan_id__results_get",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Scan Results Api Scans  Scan Id  Results Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:scan"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/scans/{scan_id}/logs": {
+      "get": {
+        "summary": "Get Scan Logs",
+        "description": "Get scan logs for a scan, ordered by timestamp.\n\n**Required Scope:** `write:scan`\n**Security:** Scan ownership validation through repository\n**Auth:** Supports both Clerk tokens and API keys",
+        "operationId": "get_scan_logs_api_scans__scan_id__logs_get",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Get Scan Logs Api Scans  Scan Id  Logs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:scan"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/scans": {
+      "get": {
+        "summary": "List Scans",
+        "description": "List scans for the authenticated user's organization.\n\n**Required Scope:** `write:scan`\n**Security:** Organization-level filtering\n**Auth:** Supports both Clerk tokens and API keys\n\nArgs:\n    org_id: Optional organization ID filter\n    status: Optional status filter\n    limit: Maximum number of scans to return\n    offset: Number of scans to skip\n    auth: Authentication context\n    \nReturns:\n    List of scans\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or no org access)",
+        "operationId": "list_scans_api_scans_get",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response List Scans Api Scans Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:scan"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/issues": {
+      "get": {
+        "summary": "Get Org Issues",
+        "description": "Get all issues for the current user's organization with pagination and filtering.\n\nArgs:\n    page: Page number (1-based)\n    per_page: Items per page (1-100)\n    severity: Comma-separated severity levels to filter by\n    category: Comma-separated categories to filter by\n    false_positive: Filter by false positive status (0=no, 1=yes, 2=review)\n    repo_id: Filter by repository ID\n    scan_id: Filter by scan ID\n    file_path: Filter by file path (partial match)\n    created_after: Filter issues created after this date\n    created_before: Filter issues created before this date\n    user: Authenticated user from Clerk\n    \nReturns:\n    Paginated list of issues with metadata\n    \nRaises:\n    401: Unauthorized (invalid token)\n    403: Forbidden (no organization found)\n    400: Bad request (invalid parameters)\n    500: Internal server error",
+        "operationId": "get_org_issues_api_issues_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number (1-based)",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number (1-based)"
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Items per page (1-100)",
+              "default": 20,
+              "title": "Per Page"
+            },
+            "description": "Items per page (1-100)"
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated severity levels to filter by",
+              "title": "Severity"
+            },
+            "description": "Comma-separated severity levels to filter by"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated categories to filter by",
+              "title": "Category"
+            },
+            "description": "Comma-separated categories to filter by"
+          },
+          {
+            "name": "false_positive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by false positive status (True/False)",
+              "title": "False Positive"
+            },
+            "description": "Filter by false positive status (True/False)"
+          },
+          {
+            "name": "repo_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by repository ID",
+              "title": "Repo Id"
+            },
+            "description": "Filter by repository ID"
+          },
+          {
+            "name": "scan_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by scan ID",
+              "title": "Scan Id"
+            },
+            "description": "Filter by scan ID"
+          },
+          {
+            "name": "file_path",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by file path (partial match)",
+              "title": "File Path"
+            },
+            "description": "Filter by file path (partial match)"
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter issues created after this date (ISO format)",
+              "title": "Created After"
+            },
+            "description": "Filter issues created after this date (ISO format)"
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter issues created before this date (ISO format)",
+              "title": "Created Before"
+            },
+            "description": "Filter issues created before this date (ISO format)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedIssuesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:issues"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/issues/summary": {
+      "get": {
+        "summary": "Get Issues Summary",
+        "description": "Get a summary of issues for the current user's organization.\n\nArgs:\n    user: Authenticated user from Clerk\n    \nReturns:\n    Summary statistics and recent issues\n    \nRaises:\n    401: Unauthorized (invalid token)\n    403: Forbidden (no organization found)\n    500: Internal server error",
+        "operationId": "get_issues_summary_api_issues_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueSummaryResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:issues"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/repositories/{repo_id}/issues": {
+      "get": {
+        "summary": "Get Repo Issues",
+        "description": "Get all issues for a specific repository in the current user's organization.\n\nArgs:\n    repo_id: Repository ID\n    page: Page number (1-based)\n    per_page: Items per page (1-100)\n    severity: Comma-separated severity levels to filter by\n    category: Comma-separated categories to filter by\n    false_positive: Filter by false positive status (0=no, 1=yes, 2=review)\n    scan_id: Filter by scan ID\n    file_path: Filter by file path (partial match)\n    user: Authenticated user from Clerk\n    \nReturns:\n    Paginated list of issues for the repository\n    \nRaises:\n    400: Bad request (invalid repo ID format)\n    401: Unauthorized (invalid token)\n    403: Forbidden (repo not owned by user's org)\n    404: Not found (repo not found)\n    500: Internal server error",
+        "operationId": "get_repo_issues_api_repositories__repo_id__issues_get",
+        "parameters": [
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Repo Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number (1-based)",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number (1-based)"
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Items per page (1-100)",
+              "default": 20,
+              "title": "Per Page"
+            },
+            "description": "Items per page (1-100)"
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated severity levels to filter by",
+              "title": "Severity"
+            },
+            "description": "Comma-separated severity levels to filter by"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated categories to filter by",
+              "title": "Category"
+            },
+            "description": "Comma-separated categories to filter by"
+          },
+          {
+            "name": "false_positive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by false positive status (True/False)",
+              "title": "False Positive"
+            },
+            "description": "Filter by false positive status (True/False)"
+          },
+          {
+            "name": "scan_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by scan ID",
+              "title": "Scan Id"
+            },
+            "description": "Filter by scan ID"
+          },
+          {
+            "name": "file_path",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by file path (partial match)",
+              "title": "File Path"
+            },
+            "description": "Filter by file path (partial match)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedIssuesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:issues"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/issues/{issue_id}": {
+      "patch": {
+        "summary": "Update Issue Status",
+        "description": "Update the status of a specific issue (mark as false positive, etc.).\n\nArgs:\n    issue_id: Issue ID to update\n    request: Update request with false_positive status and optional notes\n    user: Authenticated user from Clerk\n    \nReturns:\n    Updated issue details\n    \nRaises:\n    400: Bad request (invalid issue ID format or invalid status)\n    401: Unauthorized (invalid token)\n    403: Forbidden (issue not owned by user's org)\n    404: Not found (issue not found)\n    500: Internal server error",
+        "operationId": "update_issue_status_api_issues__issue_id__patch",
+        "parameters": [
+          {
+            "name": "issue_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Issue Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateIssueStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssueResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:issues"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/issues/bulk": {
+      "patch": {
+        "summary": "Bulk Update Issues",
+        "description": "Bulk update multiple issues with severity and/or false positive status.\n\nArgs:\n    request: Bulk update request with issue IDs and update parameters\n    user: Authenticated user from Clerk\n    \nReturns:\n    Bulk update response with success/failure counts and updated issues\n    \nRaises:\n    400: Bad request (invalid issue IDs or parameters)\n    401: Unauthorized (invalid token)\n    403: Forbidden (no organization found or issues not owned by user's org)\n    500: Internal server error",
+        "operationId": "bulk_update_issues_api_issues_bulk_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkUpdateIssuesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkUpdateIssuesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:issues"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rulesets": {
+      "post": {
+        "summary": "Create Ruleset",
+        "operationId": "create_ruleset_api_rulesets_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RulesetCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RulesetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:rulesets"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "List Rulesets",
+        "operationId": "list_rulesets_api_rulesets_get",
+        "parameters": [
+          {
+            "name": "repo_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RulesetResponse"
+                  },
+                  "title": "Response List Rulesets Api Rulesets Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:rulesets"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rulesets/{ruleset_id}": {
+      "get": {
+        "summary": "Get Ruleset",
+        "operationId": "get_ruleset_api_rulesets__ruleset_id__get",
+        "parameters": [
+          {
+            "name": "ruleset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ruleset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RulesetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:rulesets"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "summary": "Update Ruleset",
+        "operationId": "update_ruleset_api_rulesets__ruleset_id__patch",
+        "parameters": [
+          {
+            "name": "ruleset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ruleset Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RulesetUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RulesetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:rulesets"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete Ruleset",
+        "operationId": "delete_ruleset_api_rulesets__ruleset_id__delete",
+        "parameters": [
+          {
+            "name": "ruleset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ruleset Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-required-scopes": [
+          "write:rulesets"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiKeyActionResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "key_id": {
+            "type": "string",
+            "title": "Key Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "key_id"
+        ],
+        "title": "ApiKeyActionResponse",
+        "description": "Response model for API key actions (disable, revoke)."
+      },
+      "ApiKeyInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "key_id": {
+            "type": "string",
+            "title": "Key Id"
+          },
+          "key_preview": {
+            "type": "string",
+            "title": "Key Preview",
+            "description": "Masked preview of the API key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "last_used_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Used At"
+          },
+          "usage_count": {
+            "type": "integer",
+            "title": "Usage Count"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "scopes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scopes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "key_id",
+          "key_preview",
+          "name",
+          "description",
+          "status",
+          "user_id",
+          "last_used_at",
+          "usage_count",
+          "expires_at",
+          "created_at",
+          "scopes"
+        ],
+        "title": "ApiKeyInfo",
+        "description": "Response model for API key information (without the actual key)."
+      },
+      "Body_set_slack_channel_api_slack_integrations__integration_id__channel_post": {
+        "properties": {
+          "channel_id": {
+            "type": "string",
+            "title": "Channel Id"
+          },
+          "channel_name": {
+            "type": "string",
+            "title": "Channel Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "channel_id",
+          "channel_name"
+        ],
+        "title": "Body_set_slack_channel_api_slack_integrations__integration_id__channel_post"
+      },
+      "Body_upload_code_repo_api_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          },
+          "repo_name": {
+            "type": "string",
+            "title": "Repo Name"
+          },
+          "branch_name": {
+            "type": "string",
+            "title": "Branch Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file",
+          "repo_name",
+          "branch_name"
+        ],
+        "title": "Body_upload_code_repo_api_upload_post"
+      },
+      "BulkUpdateIssuesRequest": {
+        "properties": {
+          "issue_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Issue Ids",
+            "description": "List of issue IDs to update (max 100)"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity",
+            "description": "New severity level (critical, high, medium, low, info)"
+          },
+          "false_positive": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "False Positive",
+            "description": "False positive status (True/False)"
+          },
+          "exploitable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exploitable",
+            "description": "Exploitable status (True/False)"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Optional notes to add to all updated issues"
+          }
+        },
+        "type": "object",
+        "required": [
+          "issue_ids"
+        ],
+        "title": "BulkUpdateIssuesRequest"
+      },
+      "BulkUpdateIssuesResponse": {
+        "properties": {
+          "updated_count": {
+            "type": "integer",
+            "title": "Updated Count"
+          },
+          "failed_count": {
+            "type": "integer",
+            "title": "Failed Count"
+          },
+          "failed_issues": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Failed Issues"
+          },
+          "updated_issues": {
+            "items": {
+              "$ref": "#/components/schemas/IssueResponse"
+            },
+            "type": "array",
+            "title": "Updated Issues"
+          }
+        },
+        "type": "object",
+        "required": [
+          "updated_count",
+          "failed_count",
+          "failed_issues",
+          "updated_issues"
+        ],
+        "title": "BulkUpdateIssuesResponse"
+      },
+      "ComponentReviewRequest": {
+        "properties": {
+          "component_id": {
+            "type": "string",
+            "title": "Component Id",
+            "description": "UUID of the license compliance component"
+          },
+          "reviewed": {
+            "type": "boolean",
+            "title": "Reviewed",
+            "description": "Whether the component has been reviewed"
+          },
+          "review_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Notes",
+            "description": "Optional notes about the review"
+          },
+          "package_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Package Name",
+            "description": "Optional package name for validation context"
+          },
+          "package_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Package Version",
+            "description": "Optional package version for validation context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "component_id",
+          "reviewed"
+        ],
+        "title": "ComponentReviewRequest"
+      },
+      "CreateApiKeyRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "description": "Human-readable name for the API key"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Optional description of the key's purpose"
+          },
+          "expires_in_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 365.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires In Days",
+            "description": "Optional expiration in days (1-365)"
+          },
+          "scopes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scopes",
+            "description": "Optional list of scopes/permissions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CreateApiKeyRequest",
+        "description": "Request model for creating an API key."
+      },
+      "CreateApiKeyResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "key_id": {
+            "type": "string",
+            "title": "Key Id"
+          },
+          "api_key": {
+            "type": "string",
+            "title": "Api Key",
+            "description": "The full API key - store this securely, it won't be shown again"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "scopes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scopes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "key_id",
+          "api_key",
+          "name",
+          "description",
+          "status",
+          "expires_at",
+          "created_at",
+          "scopes"
+        ],
+        "title": "CreateApiKeyResponse",
+        "description": "Response model for creating an API key."
+      },
+      "DisconnectRequest": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "remove_repos": {
+            "type": "boolean",
+            "title": "Remove Repos",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "DisconnectRequest"
+      },
+      "GitLabCloneResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "task_id": {
+            "type": "string",
+            "title": "Task Id"
+          },
+          "folder_id": {
+            "type": "string",
+            "title": "Folder Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "task_id",
+          "folder_id"
+        ],
+        "title": "GitLabCloneResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImportRepoRequest": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "repo_name": {
+            "type": "string",
+            "title": "Repo Name"
+          },
+          "branch_name": {
+            "type": "string",
+            "title": "Branch Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "repo_name"
+        ],
+        "title": "ImportRepoRequest"
+      },
+      "IntegrationDetails": {
+        "properties": {
+          "integration": {
+            "$ref": "#/components/schemas/IntegrationInfo"
+          },
+          "repositories": {
+            "items": {
+              "$ref": "#/components/schemas/RepositoryInfo"
+            },
+            "type": "array",
+            "title": "Repositories"
+          }
+        },
+        "type": "object",
+        "required": [
+          "integration",
+          "repositories"
+        ],
+        "title": "IntegrationDetails"
+      },
+      "IntegrationInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "$ref": "#/components/schemas/IntegrationType"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "$ref": "#/components/schemas/IntegrationStatus"
+          },
+          "connected_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Connected At"
+          },
+          "last_sync": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sync"
+          },
+          "repo_count": {
+            "type": "integer",
+            "title": "Repo Count"
+          },
+          "accessible_repos": {
+            "type": "integer",
+            "title": "Accessible Repos"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "name",
+          "status",
+          "connected_at",
+          "last_sync",
+          "repo_count",
+          "accessible_repos"
+        ],
+        "title": "IntegrationInfo"
+      },
+      "IntegrationStatus": {
+        "type": "string",
+        "enum": [
+          "connected",
+          "disconnected",
+          "error",
+          "expired",
+          "pending"
+        ],
+        "title": "IntegrationStatus"
+      },
+      "IntegrationSummary": {
+        "properties": {
+          "total_integrations": {
+            "type": "integer",
+            "title": "Total Integrations"
+          },
+          "connected_integrations": {
+            "type": "integer",
+            "title": "Connected Integrations"
+          },
+          "total_repos": {
+            "type": "integer",
+            "title": "Total Repos"
+          },
+          "integrations": {
+            "items": {
+              "$ref": "#/components/schemas/IntegrationInfo"
+            },
+            "type": "array",
+            "title": "Integrations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_integrations",
+          "connected_integrations",
+          "total_repos",
+          "integrations"
+        ],
+        "title": "IntegrationSummary"
+      },
+      "IntegrationType": {
+        "type": "string",
+        "enum": [
+          "github",
+          "gitlab",
+          "slack",
+          "bitbucket"
+        ],
+        "title": "IntegrationType"
+      },
+      "InternalPackageRequest": {
+        "properties": {
+          "package_name": {
+            "type": "string",
+            "title": "Package Name",
+            "description": "Package name to mark as internal"
+          },
+          "package_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Package Version",
+            "description": "Specific version (null = all versions)"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Reason for marking as internal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "package_name"
+        ],
+        "title": "InternalPackageRequest"
+      },
+      "IssueResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "scan_id": {
+            "type": "string",
+            "title": "Scan Id"
+          },
+          "file_path": {
+            "type": "string",
+            "title": "File Path"
+          },
+          "line_number": {
+            "type": "integer",
+            "title": "Line Number"
+          },
+          "column_start": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Column Start"
+          },
+          "column_end": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Column End"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "severity": {
+            "type": "string",
+            "title": "Severity"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "code_snippet": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code Snippet"
+          },
+          "context_before": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Before"
+          },
+          "context_after": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context After"
+          },
+          "remediation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remediation"
+          },
+          "remediation_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remediation Code"
+          },
+          "cwe_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cwe Ids"
+          },
+          "owasp_category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owasp Category"
+          },
+          "cvss_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cvss Score"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "model_used": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Used"
+          },
+          "false_positive": {
+            "type": "boolean",
+            "title": "False Positive",
+            "default": false
+          },
+          "exploitable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exploitable"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "repo_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repo Name"
+          },
+          "scan_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scan Status"
+          },
+          "scan_created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scan Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "scan_id",
+          "file_path",
+          "line_number",
+          "category",
+          "severity",
+          "confidence",
+          "title",
+          "description"
+        ],
+        "title": "IssueResponse"
+      },
+      "IssueSummaryResponse": {
+        "properties": {
+          "total_issues": {
+            "type": "integer",
+            "title": "Total Issues"
+          },
+          "issues_by_severity": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Issues By Severity"
+          },
+          "issues_by_category": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Issues By Category"
+          },
+          "false_positive_count": {
+            "type": "integer",
+            "title": "False Positive Count"
+          },
+          "recent_issues": {
+            "items": {
+              "$ref": "#/components/schemas/IssueResponse"
+            },
+            "type": "array",
+            "title": "Recent Issues"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_issues",
+          "issues_by_severity",
+          "issues_by_category",
+          "false_positive_count",
+          "recent_issues"
+        ],
+        "title": "IssueSummaryResponse"
+      },
+      "LicenseOverrideRequest": {
+        "properties": {
+          "spdx_id": {
+            "type": "string",
+            "title": "Spdx Id",
+            "description": "SPDX license identifier"
+          },
+          "override_risk_level": {
+            "type": "string",
+            "title": "Override Risk Level",
+            "description": "New risk level (critical, high, medium, low, info, depends_on_usage)"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Reason for the override"
+          }
+        },
+        "type": "object",
+        "required": [
+          "spdx_id",
+          "override_risk_level"
+        ],
+        "title": "LicenseOverrideRequest"
+      },
+      "ListApiKeysResponse": {
+        "properties": {
+          "api_keys": {
+            "items": {
+              "$ref": "#/components/schemas/ApiKeyInfo"
+            },
+            "type": "array",
+            "title": "Api Keys"
+          },
+          "total_count": {
+            "type": "integer",
+            "title": "Total Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "api_keys",
+          "total_count"
+        ],
+        "title": "ListApiKeysResponse",
+        "description": "Response model for listing API keys."
+      },
+      "PRIssueResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "scan_id": {
+            "type": "string",
+            "title": "Scan Id"
+          },
+          "org_id": {
+            "type": "string",
+            "title": "Org Id"
+          },
+          "repo_name": {
+            "type": "string",
+            "title": "Repo Name"
+          },
+          "pr_number": {
+            "type": "integer",
+            "title": "Pr Number"
+          },
+          "file_path": {
+            "type": "string",
+            "title": "File Path"
+          },
+          "line_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line Number"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "remediation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remediation"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "pull_request_scan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pull Request Scan Id"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "code_snippet": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code Snippet"
+          },
+          "suggested_fix_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggested Fix Code"
+          },
+          "business_impact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Impact"
+          },
+          "is_exploitable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Exploitable",
+            "default": false
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence",
+            "default": 0.5
+          },
+          "cwe_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cwe Ids"
+          },
+          "owasp_category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owasp Category"
+          },
+          "remediation_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remediation Code"
+          },
+          "compliance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compliance"
+          },
+          "attack_vector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attack Vector"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "scan_id",
+          "org_id",
+          "repo_name",
+          "pr_number",
+          "file_path",
+          "line_number",
+          "title",
+          "description",
+          "severity",
+          "explanation",
+          "remediation",
+          "tags",
+          "created_at"
+        ],
+        "title": "PRIssueResponse"
+      },
+      "PaginatedIssuesResponse": {
+        "properties": {
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/IssueResponse"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "per_page": {
+            "type": "integer",
+            "title": "Per Page"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages"
+          },
+          "has_next": {
+            "type": "boolean",
+            "title": "Has Next"
+          },
+          "has_prev": {
+            "type": "boolean",
+            "title": "Has Prev"
+          }
+        },
+        "type": "object",
+        "required": [
+          "issues",
+          "total",
+          "page",
+          "per_page",
+          "total_pages",
+          "has_next",
+          "has_prev"
+        ],
+        "title": "PaginatedIssuesResponse"
+      },
+      "PullRequestScanResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "clerk_org_id": {
+            "type": "string",
+            "title": "Clerk Org Id"
+          },
+          "repo_name": {
+            "type": "string",
+            "title": "Repo Name"
+          },
+          "branch_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Branch Name"
+          },
+          "pr_number": {
+            "type": "integer",
+            "title": "Pr Number"
+          },
+          "pr_link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pr Link"
+          },
+          "comment_link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment Link"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "clerk_org_id",
+          "repo_name",
+          "branch_name",
+          "pr_number",
+          "pr_link",
+          "comment_link",
+          "created_at"
+        ],
+        "title": "PullRequestScanResponse"
+      },
+      "RepositoriesResponse": {
+        "properties": {
+          "all_repos": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "All Repos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "all_repos"
+        ],
+        "title": "RepositoriesResponse"
+      },
+      "RepositoryInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "branch_name": {
+            "type": "string",
+            "title": "Branch Name"
+          },
+          "source_type": {
+            "type": "string",
+            "title": "Source Type"
+          },
+          "public_link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Public Link"
+          },
+          "added_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Added At"
+          },
+          "indexed_only": {
+            "type": "boolean",
+            "title": "Indexed Only"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "branch_name",
+          "source_type",
+          "added_at",
+          "indexed_only"
+        ],
+        "title": "RepositoryInfo"
+      },
+      "RepositorySummaryListResponse": {
+        "properties": {
+          "summaries": {
+            "items": {
+              "$ref": "#/components/schemas/RepositorySummaryResponse"
+            },
+            "type": "array",
+            "title": "Summaries"
+          },
+          "total_count": {
+            "type": "integer",
+            "title": "Total Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summaries",
+          "total_count"
+        ],
+        "title": "RepositorySummaryListResponse",
+        "description": "Response model for listing repository summaries."
+      },
+      "RepositorySummaryResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "repo_id": {
+            "type": "string",
+            "title": "Repo Id"
+          },
+          "org_id": {
+            "type": "string",
+            "title": "Org Id"
+          },
+          "architecture_pattern": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Architecture Pattern"
+          },
+          "auth_logic_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auth Logic Summary"
+          },
+          "trust_boundaries": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trust Boundaries"
+          },
+          "business_logic_flows": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Logic Flows"
+          },
+          "cross_file_dependencies": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cross File Dependencies"
+          },
+          "rag_context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rag Context"
+          },
+          "security_context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Security Context"
+          },
+          "data_flow_analysis": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Flow Analysis"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "repo_id",
+          "org_id"
+        ],
+        "title": "RepositorySummaryResponse",
+        "description": "Response model for repository summary data."
+      },
+      "RulesetCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "rules_text": {
+            "type": "string",
+            "title": "Rules Text"
+          },
+          "repo_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repo Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "rules_text"
+        ],
+        "title": "RulesetCreateRequest"
+      },
+      "RulesetResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "rules_text": {
+            "type": "string",
+            "title": "Rules Text"
+          },
+          "org_id": {
+            "type": "string",
+            "title": "Org Id"
+          },
+          "repo_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repo Ids"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "rules_text",
+          "org_id",
+          "repo_ids",
+          "created_at",
+          "updated_at",
+          "created_by"
+        ],
+        "title": "RulesetResponse"
+      },
+      "RulesetUpdateRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "rules_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rules Text"
+          },
+          "repo_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repo Ids"
+          }
+        },
+        "type": "object",
+        "title": "RulesetUpdateRequest"
+      },
+      "SupportTicketCategory": {
+        "type": "string",
+        "enum": [
+          "Technical Support",
+          "Billing & Account",
+          "Feature Request",
+          "Bug Report",
+          "General Inquiry"
+        ],
+        "title": "SupportTicketCategory"
+      },
+      "SupportTicketCreateRequest": {
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Full Name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/SupportTicketPriority",
+            "default": "Medium"
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 3,
+            "title": "Subject"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 10,
+            "title": "Description"
+          },
+          "screenshots": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Screenshots"
+          },
+          "category": {
+            "$ref": "#/components/schemas/SupportTicketCategory"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SupportTicketStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "full_name",
+          "email",
+          "subject",
+          "description",
+          "category"
+        ],
+        "title": "SupportTicketCreateRequest"
+      },
+      "SupportTicketPriority": {
+        "type": "string",
+        "enum": [
+          "Low",
+          "Medium",
+          "High",
+          "Urgent"
+        ],
+        "title": "SupportTicketPriority"
+      },
+      "SupportTicketResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "ticket_number": {
+            "type": "string",
+            "title": "Ticket Number"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/SupportTicketPriority"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "screenshots": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Screenshots"
+          },
+          "category": {
+            "$ref": "#/components/schemas/SupportTicketCategory"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SupportTicketStatus"
+          },
+          "clerk_org_id": {
+            "type": "string",
+            "title": "Clerk Org Id"
+          },
+          "clerk_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clerk User Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticket_number",
+          "full_name",
+          "email",
+          "priority",
+          "subject",
+          "description",
+          "screenshots",
+          "category",
+          "status",
+          "clerk_org_id",
+          "clerk_user_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "SupportTicketResponse"
+      },
+      "SupportTicketStatus": {
+        "type": "string",
+        "enum": [
+          "Open",
+          "Closed",
+          "In Progress"
+        ],
+        "title": "SupportTicketStatus"
+      },
+      "SyncStatus": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "synced_repos": {
+            "type": "integer",
+            "title": "Synced Repos"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Errors",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "synced_repos"
+        ],
+        "title": "SyncStatus"
+      },
+      "TokenRenewalRequest": {
+        "properties": {
+          "force_renewal": {
+            "type": "boolean",
+            "title": "Force Renewal",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "TokenRenewalRequest"
+      },
+      "TokenRenewalResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "new_expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Expires At"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
+        "title": "TokenRenewalResponse"
+      },
+      "UpdateIssueStatusRequest": {
+        "properties": {
+          "false_positive": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "False Positive",
+            "description": "True if issue is a false positive, False otherwise"
+          },
+          "exploitable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exploitable",
+            "description": "True if issue is exploitable, False otherwise"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Optional notes about the issue"
+          }
+        },
+        "type": "object",
+        "title": "UpdateIssueStatusRequest"
+      },
+      "UpdatePRIssueRequest": {
+        "properties": {
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status",
+            "description": "Status: open, closed, false_positive, accepted"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity",
+            "description": "Severity: critical, high, medium, low, info"
+          }
+        },
+        "type": "object",
+        "title": "UpdatePRIssueRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Use an API key in the X-API-Key header."
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Clerk JWT bearer token."
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    },
+    {
+      "BearerAuth": []
+    }
+  ]
+}
