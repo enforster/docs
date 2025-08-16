@@ -55,33 +55,27 @@
       "url": "https://github.com/enforster"
     }
   ],
-"navigation": {
-  "tabs": [
-    {
-      "tab": "Documentation", 
-      "groups": [
-        {
-          "group": "🏠 Home",
-          "pages": ["index"]
-        }
-      ]
-    },
-{
-        "tab": "API Reference",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation", 
         "groups": [
           {
-            "group": "📖 Getting Started",
-            "pages": [
-              "api-reference/index",
-              "api-reference/authentication"
-            ]
+            "group": "🏠 Home",
+            "pages": ["index"]
           }
         ]
+      },
+      {
+        "tab": "API Reference",
+        "api": {
+          "openapi": "api-reference/openapi.json"
+        }
       }
     ]
   },
   "api": {
-    "baseUrl": "https://api.enforster.ai/v1",
+    "baseUrl": "https://api.enforster.ai/",
     "auth": {
       "method": "bearer"
     },
@@ -89,11 +83,6 @@
       "mode": "show"
     }
   },
-  "openapi": [
-    {
-      "url": "api-reference/openapi.json"
-    }
-  ],
   "footerSocials": {
     "twitter": "https://twitter.com/enforsterai",
     "github": "https://github.com/enforster",
