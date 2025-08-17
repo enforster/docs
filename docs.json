@@ -57,20 +57,30 @@
   ],
   "navigation": {
     "tabs": [
-      {
-        "tab": "Documentation", 
-        "groups": [
-          {
-            "group": "🏠 Home",
-            "pages": ["index"]
-          }
-        ]
-      },
+              {
+          "tab": "Documentation", 
+          "groups": [
+            {
+              "group": "🏠 Home",
+              "pages": ["index"]
+            },
+            {
+              "group": "🚀 Getting Started",
+              "pages": ["getting-started/quickstart"]
+            }
+          ]
+        },
       {
         "tab": "API Reference",
-        "api": {
-          "openapi": "api-reference/openapi.json"
-        }
+        "groups": [
+          {
+            "group": "Endpoints",
+            "openapi": {
+              "source": "/api-reference/openapi.json",
+              "directory": "api-reference"
+            }
+          }
+        ]
       }
     ]
   },

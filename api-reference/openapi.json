@@ -3,13 +3,13 @@
   "info": {
     "title": "Enforster AI API",
     "description": "Enforster AI API for code analysis and security scanning.",
-    "version": "1.0.0"
+    "version": "1.8.0"
   },
   "paths": {
     "/api/upload": {
       "post": {
-        "summary": "Upload Code Repo",
-        "description": "Upload and scan a repository file.\n\n**Required Scope:** `write:repo`\n**Security:** Organization-level access control\n**Auth:** Supports both Clerk tokens and API keys",
+        "summary": "Upload Code Repository",
+        "description": "Manually upload a repository zip file.\n\n**Required Scope:** `write:repo`\n**Security:** Organization-level access control",
         "operationId": "upload_code_repo_api_upload_post",
         "requestBody": {
           "content": {
@@ -57,7 +57,7 @@
     "/api/repositories": {
       "get": {
         "summary": "List Repositories",
-        "description": "Get all repositories for the current user's organization.\n\n**Required Scope:** `read:repo`\n**Security:** Organization-level access control with IDOR prevention\n**Auth:** Supports both Clerk tokens and API keys",
+        "description": "Get all repositories for the organization.\n\n**Required Scope:** `read:repo`",
         "operationId": "list_repositories_api_repositories_get",
         "responses": {
           "200": {
@@ -86,8 +86,8 @@
     },
     "/api/repositories/{repo_id}": {
       "delete": {
-        "summary": "Deactivate Repository",
-        "description": "Deactivate a repository by clearing sensitive fields and renaming it to indicate deactivation.\nThis is used instead of deletion due to foreign key constraints.\n\nThe deactivation process:\n1. Clears sensitive fields (internal_repo_path, public_link, github_repo_id, gitlab_repo_id, github_account_name)\n2. Renames the repository to \"{original_name}_deactivated\"\n3. Removes the repository from GitHub/GitLab index tables if present\n4. Preserves all related data (scans, issues, summaries) for audit purposes\n\nArgs:\n    repo_id: Repository ID to deactivate\n    user: Authenticated user from Clerk\n    \nReturns:\n    204: Repository successfully deactivated\n    403: Missing org or user ID\n    404: Repository not found or not authorized\n    500: Internal server error",
+        "summary": "Delete Repository",
+        "description": "Delete a repository.\nReturns:\n    204: Repository successfully deleted\n    403: Missing org or user ID\n    404: Repository not found or not authorized\n    500: Internal server error",
         "operationId": "deactivate_repository_api_repositories__repo_id__delete",
         "parameters": [
           {
@@ -136,7 +136,7 @@
     "/api/repositories/{repo_id}/summary": {
       "get": {
         "summary": "Get Repository Summary",
-        "description": "Get repository summary data for a specific repository.\n\n**Required Scope:** `read:repo`\n**Security:** Organization-level access control with resource validation\n**Auth:** Supports both Clerk tokens and API keys\n\nArgs:\n    repo_id: Repository ID\n    auth: Authentication context\n    \nReturns:\n    Repository summary data including architecture patterns, auth logic, and RAG context\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or no access to repo)\n    404: Repository or summary not found\n    500: Internal server error",
+        "description": "Get repository summary data for a specific repository.\n\n**Required Scope:** `read:repo`\n**Security:** Organization-level access control with resource validation\n\nArgs:\n    repo_id: Repository ID\n    auth: Authentication context\n    \nReturns:\n    Repository summary data including architecture patterns, auth logic, and RAG context\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or no access to repo)\n    404: Repository or summary not found\n    500: Internal server error",
         "operationId": "get_repository_summary_api_repositories__repo_id__summary_get",
         "parameters": [
           {
@@ -187,7 +187,7 @@
     "/api/repositories/summaries": {
       "get": {
         "summary": "List Repository Summaries",
-        "description": "Get all repository summaries for the current user's organization.\n\nArgs:\n  Get all repository summaries for the current user's organization.\n\n**Required Scope:** `read:repo`\n**Security:** Organization-level filtering\n**Auth:** Supports both Clerk tokens and API keys\n\nReturns:\n    List of repository summaries with metadata\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope)\n    500: Internal server error",
+        "description": "Get all repository summaries for the organization.\n\nArgs:\n  Get all repository summaries for the organization.\n\n**Required Scope:** `read:repo`\n**Security:** Organization-level filtering\n\nReturns:\n    List of repository summaries with metadata\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope)\n    500: Internal server error",
         "operationId": "list_repository_summaries_api_repositories_summaries_get",
         "responses": {
           "200": {
@@ -217,7 +217,7 @@
     "/api/scans/{repo_id}": {
       "post": {
         "summary": "Create Scan",
-        "description": "Create a new scan for a repository and queue it for execution.\n\n**Required Scope:** `write:scan`\n**Security:** Repository ownership validation\n**Auth:** Supports both Clerk tokens and API keys\n\nArgs:\n    repo_id: Repository ID to scan\n    request: Scan creation request with scan_type and active_models\n    background_tasks: FastAPI background tasks\n    auth: Authentication context\n    \nReturns:\n    Created scan details with task ID\n    \nRaises:\n    400: Bad request (validation errors, including if scan is already running)\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or repository not owned by user's org)\n    404: Not found (repository not found)\n    500: Internal server error",
+        "description": "Create a new scan for a repository and queue it for execution.\n\n**Required Scope:** `write:scan`\n**Security:** Repository ownership validation\n\nArgs:\n    repo_id: Repository ID to scan\n    request: Scan creation request with scan_type and active_models\n    background_tasks: FastAPI background tasks\n    auth: Authentication context\n    \nReturns:\n    Created scan details with task ID\n    \nRaises:\n    400: Bad request (validation errors, including if scan is already running)\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or repository not owned by user's org)\n    404: Not found (repository not found)\n    500: Internal server error",
         "operationId": "create_scan_api_scans__repo_id__post",
         "parameters": [
           {
@@ -282,7 +282,7 @@
     "/api/scans/{scan_id}/stop": {
       "post": {
         "summary": "Stop Scan",
-        "description": "Stop a running scan by cancelling the Celery task.\n\n**Required Scope:** `write:scan`\n**Security:** Scan ownership validation through repository\n**Auth:** Supports both Clerk tokens and API keys\n\nArgs:\n    scan_id: Scan ID to stop\n    auth: Authentication context\n    \nReturns:\n    Success message with scan status\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or scan not owned by user's org)\n    404: Not found (scan not found)\n    400: Bad request (scan not running)",
+        "description": "Stop a running scan by cancelling the Celery task.\n\n**Required Scope:** `write:scan`\n**Security:** Scan ownership validation through repository\n\nArgs:\n    scan_id: Scan ID to stop\n    auth: Authentication context\n    \nReturns:\n    Success message with scan status\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or scan not owned by user's org)\n    404: Not found (scan not found)\n    400: Bad request (scan not running)",
         "operationId": "stop_scan_api_scans__scan_id__stop_post",
         "parameters": [
           {
@@ -494,7 +494,7 @@
     "/api/scans/{scan_id}/logs": {
       "get": {
         "summary": "Get Scan Logs",
-        "description": "Get scan logs for a scan, ordered by timestamp.\n\n**Required Scope:** `write:scan`\n**Security:** Scan ownership validation through repository\n**Auth:** Supports both Clerk tokens and API keys",
+        "description": "Get scan logs for a scan, ordered by timestamp.\n\n**Required Scope:** `write:scan`\n**Security:** Scan ownership validation through repository",
         "operationId": "get_scan_logs_api_scans__scan_id__logs_get",
         "parameters": [
           {
@@ -550,7 +550,7 @@
     "/api/scans": {
       "get": {
         "summary": "List Scans",
-        "description": "List scans for the authenticated user's organization.\n\n**Required Scope:** `write:scan`\n**Security:** Organization-level filtering\n**Auth:** Supports both Clerk tokens and API keys\n\nArgs:\n    org_id: Optional organization ID filter\n    status: Optional status filter\n    limit: Maximum number of scans to return\n    offset: Number of scans to skip\n    auth: Authentication context\n    \nReturns:\n    List of scans\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or no org access)",
+        "description": "List scans for the authenticated user's organization.\n\n**Required Scope:** `write:scan`\n**Security:** Organization-level filtering\n\nArgs:\n    org_id: Optional organization ID filter\n    status: Optional status filter\n    limit: Maximum number of scans to return\n    offset: Number of scans to skip\n    auth: Authentication context\n    \nReturns:\n    List of scans\n    \nRaises:\n    401: Unauthorized (invalid token/API key)\n    403: Forbidden (insufficient scope or no org access)",
         "operationId": "list_scans_api_scans_get",
         "parameters": [
           {
@@ -649,7 +649,7 @@
     "/api/issues": {
       "get": {
         "summary": "Get Org Issues",
-        "description": "Get all issues for the current user's organization with pagination and filtering.\n\nArgs:\n    page: Page number (1-based)\n    per_page: Items per page (1-100)\n    severity: Comma-separated severity levels to filter by\n    category: Comma-separated categories to filter by\n    false_positive: Filter by false positive status (0=no, 1=yes, 2=review)\n    repo_id: Filter by repository ID\n    scan_id: Filter by scan ID\n    file_path: Filter by file path (partial match)\n    created_after: Filter issues created after this date\n    created_before: Filter issues created before this date\n    user: Authenticated user from Clerk\n    \nReturns:\n    Paginated list of issues with metadata\n    \nRaises:\n    401: Unauthorized (invalid token)\n    403: Forbidden (no organization found)\n    400: Bad request (invalid parameters)\n    500: Internal server error",
+        "description": "Get all issues for the organization with pagination and filtering.\n\nArgs:\n    page: Page number (1-based)\n    per_page: Items per page (1-100)\n    severity: Comma-separated severity levels to filter by\n    category: Comma-separated categories to filter by\n    false_positive: Filter by false positive status (0=no, 1=yes, 2=review)\n    repo_id: Filter by repository ID\n    scan_id: Filter by scan ID\n    file_path: Filter by file path (partial match)\n    created_after: Filter issues created after this date\n    created_before: Filter issues created before this date\n    user: Authenticated user from Clerk\n    \nReturns:\n    Paginated list of issues with metadata\n    \nRaises:\n    401: Unauthorized (invalid token)\n    403: Forbidden (no organization found)\n    400: Bad request (invalid parameters)\n    500: Internal server error",
         "operationId": "get_org_issues_api_issues_get",
         "parameters": [
           {
@@ -862,7 +862,7 @@
     "/api/issues/summary": {
       "get": {
         "summary": "Get Issues Summary",
-        "description": "Get a summary of issues for the current user's organization.\n\nArgs:\n    user: Authenticated user from Clerk\n    \nReturns:\n    Summary statistics and recent issues\n    \nRaises:\n    401: Unauthorized (invalid token)\n    403: Forbidden (no organization found)\n    500: Internal server error",
+        "description": "Get a summary of issues for the organization.\n\nArgs:\n    user: Authenticated user from Clerk\n    \nReturns:\n    Summary statistics and recent issues\n    \nRaises:\n    401: Unauthorized (invalid token)\n    403: Forbidden (no organization found)\n    500: Internal server error",
         "operationId": "get_issues_summary_api_issues_summary_get",
         "responses": {
           "200": {
@@ -892,7 +892,7 @@
     "/api/repositories/{repo_id}/issues": {
       "get": {
         "summary": "Get Repo Issues",
-        "description": "Get all issues for a specific repository in the current user's organization.\n\nArgs:\n    repo_id: Repository ID\n    page: Page number (1-based)\n    per_page: Items per page (1-100)\n    severity: Comma-separated severity levels to filter by\n    category: Comma-separated categories to filter by\n    false_positive: Filter by false positive status (0=no, 1=yes, 2=review)\n    scan_id: Filter by scan ID\n    file_path: Filter by file path (partial match)\n    user: Authenticated user from Clerk\n    \nReturns:\n    Paginated list of issues for the repository\n    \nRaises:\n    400: Bad request (invalid repo ID format)\n    401: Unauthorized (invalid token)\n    403: Forbidden (repo not owned by user's org)\n    404: Not found (repo not found)\n    500: Internal server error",
+        "description": "Get all issues for a specific repository in the organization.\n\nArgs:\n    repo_id: Repository ID\n    page: Page number (1-based)\n    per_page: Items per page (1-100)\n    severity: Comma-separated severity levels to filter by\n    category: Comma-separated categories to filter by\n    false_positive: Filter by false positive status (0=no, 1=yes, 2=review)\n    scan_id: Filter by scan ID\n    file_path: Filter by file path (partial match)\n    user: Authenticated user from Clerk\n    \nReturns:\n    Paginated list of issues for the repository\n    \nRaises:\n    400: Bad request (invalid repo ID format)\n    401: Unauthorized (invalid token)\n    403: Forbidden (repo not owned by user's org)\n    404: Not found (repo not found)\n    500: Internal server error",
         "operationId": "get_repo_issues_api_repositories__repo_id__issues_get",
         "parameters": [
           {

@@ -24,9 +24,9 @@
       "description": "Quick start guide to set up AI-powered security scanning in 120 seconds",
       "pages": [
         {
-          "path": "getting-started/quick-start.mdx",
-          "title": "⚡ Quick Start (120 Seconds)",
-          "description": "Get your first AI SAST scan running in under 2 minutes"
+          "path": "getting-started/quickstart.mdx",
+          "title": "Quickstart",
+          "description": "Setup Corgea in less than 5 mins."
         },
         {
           "path": "getting-started/installation.mdx", 
