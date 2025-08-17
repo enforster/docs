@@ -67,6 +67,14 @@
             {
               "group": "🚀 Getting Started",
               "pages": ["getting-started/quickstart"]
+            },
+            {
+              "group": "🚀 Product Updates",
+              "pages": ["product-updates/changelog", "product-updates/roadmap"]
+            },
+            {
+              "group": "🛡️ Trust Center",
+              "pages": ["trust-center/security-policy", "trust-center/privacy-policy", "trust-center/terms-of-service", "trust-center/data-retention", "trust-center/compliance"]
             }
           ]
         },

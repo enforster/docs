@@ -214,6 +214,55 @@
           "description": "Join the Enforster AI developer community"
         }
       ]
+    },
+    {
+      "path": "product-updates",
+      "title": "🚀 Product Updates",
+      "description": "Stay current with latest releases and future innovations",
+      "pages": [
+        {
+          "path": "product-updates/changelog.mdx",
+          "title": "📋 Release Notes",
+          "description": "Comprehensive tracking of all Enforster AI updates and improvements"
+        },
+        {
+          "path": "product-updates/roadmap.mdx",
+          "title": "🗺️ Product Roadmap",
+          "description": "Exclusive preview of upcoming features and strategic direction"
+        }
+      ]
+    },
+    {
+      "path": "trust-center",
+      "title": "🛡️ Trust Center",
+      "description": "Enterprise-grade security, compliance, and trust information",
+      "pages": [
+        {
+          "path": "trust-center/security-policy.mdx",
+          "title": "🔒 Security Policy",
+          "description": "Our comprehensive security framework and protocols"
+        },
+        {
+          "path": "trust-center/privacy-policy.mdx",
+          "title": "🔐 Privacy Policy",
+          "description": "How we protect and handle your data with transparency"
+        },
+        {
+          "path": "trust-center/terms-of-service.mdx",
+          "title": "⚖️ Terms of Service",
+          "description": "Clear terms governing your use of Enforster AI"
+        },
+        {
+          "path": "trust-center/data-retention.mdx",
+          "title": "💾 Data Retention Policy",
+          "description": "Our data lifecycle management and retention practices"
+        },
+        {
+          "path": "trust-center/compliance.mdx",
+          "title": "📋 Compliance & Certifications",
+          "description": "Industry standards and compliance frameworks we meet"
+        }
+      ]
     }
   ],
   "navigation": {
